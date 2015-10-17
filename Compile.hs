@@ -13,9 +13,16 @@ fillTemplate config ('%':'K':'E':'Y':'%':rest) = key config ++ fillTemplate conf
 fillTemplate config ('\n':rest) = fillTemplate config rest
 fillTemplate config (c:rest) = c:fillTemplate config rest
 
+readConfigFromArgs :: IO Config
+readConfigFromArgs = do
+  args <- getArgs
+  case args of
+    [r, k] -> return $ Config { route = r, key = k }
+    _ -> error "Usage: ... <route-url> <secret-key>"
+
 main :: IO ()
 main = do
-  [r, k] <- getArgs
+  config <- readConfigFromArgs
   template <- readFile "readIt.js"
-  let outText = "javascript:" ++ fillTemplate (Config { route = r, key = k }) template
+  let outText = "javascript:" ++ fillTemplate config template
   writeFile "out.js" outText
