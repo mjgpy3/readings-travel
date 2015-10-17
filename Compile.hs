@@ -2,15 +2,20 @@ module Main where
 
 import System.Environment (getArgs)
 
-fillTemplate [] [] = []
-fillTemplate (v:[]) ('%':'H':'O':'S':'T':'%':rest) = v ++ fillTemplate [] rest
-fillTemplate (v:vs) ('%':'K':'E':'Y':'%':rest) = v ++ fillTemplate vs rest
-fillTemplate xs ('\n':rest) = fillTemplate xs rest
-fillTemplate xs (c:rest) = c:fillTemplate xs rest
+data Config = Config {
+  route :: String,
+  key :: String
+}
+
+fillTemplate _ [] = []
+fillTemplate config ('%':'H':'O':'S':'T':'%':rest) = route config ++ fillTemplate config rest
+fillTemplate config ('%':'K':'E':'Y':'%':rest) = key config ++ fillTemplate config rest
+fillTemplate config ('\n':rest) = fillTemplate config rest
+fillTemplate config (c:rest) = c:fillTemplate config rest
 
 main :: IO ()
 main = do
-  args <- getArgs
+  [r, k] <- getArgs
   template <- readFile "readIt.js"
-  let outText = "javascript:" ++ fillTemplate args template
+  let outText = "javascript:" ++ fillTemplate (Config { route = r, key = k }) template
   writeFile "out.js" outText
