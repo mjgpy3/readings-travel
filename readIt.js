@@ -25,11 +25,24 @@
     button.textContent = 'Read it!';
     button.onclick = sendRead;
 
+    var exit = document.createElement('button');
+    exit.textContent = 'X';
+
+    exit.onclick = function () {
+      document.body.removeChild(div);
+    };
+
+    var outputLabel = document.createElement('h3');
+    outputLabel.textContent = '...';
+    outputLabel.style.color = 'white';
+    outputLabel.style.position = 'relative';
 
     div.appendChild(button);
+    div.appendChild(exit);
+    div.appendChild(document.createElement('br'));
+    div.appendChild(outputLabel);
     document.body.appendChild(div);
   };
-
 
   createPopover();
 
