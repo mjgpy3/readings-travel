@@ -1,15 +1,36 @@
 (function (document) {
-  var sendRead = function () {
-    var data = {
-      url: document.URL,
-      key: '%KEY%'
+  var sendRead = function (outputLabel) {
+    return function () {
+      var data = {
+        url: document.URL,
+        key: '%KEY%'
+      };
+
+      var xhr = new XMLHttpRequest();
+
+      var output = function (text, color) {
+        outputLabel.textContent = text;
+        outputLabel.style.color = color;
+      };
+
+      xhr.addEventListener('load', function () {
+        output(':)', 'green');
+      });
+
+      xhr.addEventListener('error', function () {
+        output(':(', 'red');
+      });
+
+      try {
+        xhr.open('post', '%HOST%', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+        xhr.send(JSON.stringify(data));
+      } catch (e) {
+        output(':(', 'red');
+        console.log(e);
+      }
     };
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('post', '%HOST%', true);
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-
-    xhr.send(JSON.stringify(data));
   };
 
   var createPopover = function () {
@@ -23,7 +44,6 @@
 
     var button = document.createElement('button');
     button.textContent = 'Read it!';
-    button.onclick = sendRead;
 
     var exit = document.createElement('button');
     exit.textContent = 'X';
@@ -36,6 +56,9 @@
     outputLabel.textContent = '...';
     outputLabel.style.color = 'white';
     outputLabel.style.position = 'relative';
+    outputLabel.style.left = '50%';
+
+    button.onclick = sendRead(outputLabel);
 
     div.appendChild(button);
     div.appendChild(exit);
